@@ -1,0 +1,73 @@
+---
+
+- name: Download MySQL Community Repo
+  get_url:
+    url: http://repo.mysql.com/mysql57-community-release-el7-7.noarch.rpm
+    dest: /tmp
+
+- name: Install MySQL Community Repo
+  command: /usr/bin/rpm -ivh /tmp/mysql57-community-release-el7-7.noarch.rpm
+  register: remi_mysql_repo_result
+  failed_when: "'conflict' in remi_mysql_repo_result.stderr"
+  
+- name: Install MySQL Server
+  yum: name=mysql-server state=present
+
+- name: Install MySQL-python, this is required for the task remove anonymous user
+  yum: name=MySQL-python state=present
+
+- name: Start MySQL Server and enable it
+  service: name=mysqld state=started enabled=yes
+
+# Secure MySql
+
+- name: copy .my.cnf file with root password credentials
+  template: src=templates/mysql/.my.cnf dest=/root/.my.cnf owner=root mode=0600
+
+- name: Find temporary password
+  shell: "echo `grep 'temporary.*root@localhost' /var/log/mysqld.log | sed 's/.*root@localhost: //'`"
+  register: mysql_root_password_temp
+  tags: register
+   
+- name: SET policy password to LOW
+  shell: 'mysql -u root -p"{{ mysql_root_password_temp.stdout}}" -e "SET GLOBAL validate_password_policy=LOW;" --connect-expired-password'
+  register: set_policy_pwd_command_result
+  ignore_errors: True 
+   
+- name: Set new password from temporary password
+  shell: 'mysql -e "SET PASSWORD = PASSWORD(''{{ mysql.root_password }}'');" --connect-expired-password -uroot -p"{{ mysql_root_password_temp.stdout }}"'
+  ignore_errors: True   			   
+    
+- name: update mysql root password for all root accounts
+  mysql_user: name=root host={{ item }} password={{ mysql.root_password }}
+  with_items:
+     - "{{ ansible_hostname }}"
+     - 127.0.0.1
+     - ::1
+
+- name: ensure anonymous users are not in the database
+  mysql_user: name='' host={{ item }} state=absent
+  with_items:
+     - localhost
+     - "{{ inventory_hostname }}"
+
+- name: remove the test database
+  mysql_db: name=test state=absent
+
+- name: Remove Test database if it exist.
+  mysql_db: name=test state=absent
+ 
+- name: Remove All Anonymous User Accounts
+  mysql_user: name=” host_all=yes state=absent
+
+- name: bind mysql remote address
+  ini_file: dest=/etc/my.cnf
+            section=mysqld
+            option=bind-address
+            value={{item}}
+  with_items: mysql.bind
+  tags:
+  - mysql
+  - mysql-configure
+  notify:
+  - restart mysql
