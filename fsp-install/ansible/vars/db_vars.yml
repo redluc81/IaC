@@ -1,0 +1,9 @@
+mysql:
+  root_password: admin1234
+  db: fsp
+  user: myuser
+  password: passwourld
+  privileges: '*.*:ALL'
+  host: '%'
+  bind:
+   - 0.0.0.0

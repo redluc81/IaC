@@ -1,0 +1,9 @@
+---
+
+- name: MySql Install and Configure
+  hosts: databases
+  gather_facts: true
+  vars_files:
+    - vars/db_vars.yml
+  roles:
+    - role: mysql

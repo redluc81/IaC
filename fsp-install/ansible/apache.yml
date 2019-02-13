@@ -1,0 +1,10 @@
+---
+- hosts: apache
+  become: true
+  roles:
+    - httpd
+  post_tasks:
+    - name: ensure firewall is not running, not a concern of this role
+      service:
+        name: firewalld
+        state: stopped

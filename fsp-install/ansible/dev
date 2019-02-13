@@ -1,0 +1,5 @@
+[apache]
+192.168.33.23 ansible_ssh_user=vagrant
+
+[databases]
+192.168.33.24 ansible_ssh_user=vagrant ansible_become_pass=vagrant ansible_become_user=root ansible_become=yes 
