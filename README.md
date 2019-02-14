@@ -8,11 +8,11 @@ Vagrant 1.9.1
 
 # command to run
 
-cd fsp-install/vagrant/centos
+cd IaC/vagrant/centos
 
 vagrant up
 
-cd fsp-install/ansible
+cd IaC/ansible
 
 ansible-playbook apache.yml
 
