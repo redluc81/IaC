@@ -18,10 +18,10 @@ ansible-playbook apache.yml
 
 ansible-playbook mysql.yml
 
-
 # to test go inside a vagrant box (for example the server where has been installed MySql)
 ssh vagrant@192.168.33.24 
 # and run 
 mysql -u root -p
 # the password is admin1234
+
 
