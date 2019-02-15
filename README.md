@@ -25,9 +25,7 @@ and install/configure with Ansible
 # Notes
 
 To connect with the Vagrant boxex you have to create your SSH private and public key
-and the change the path at those 2 lines
-server01.ssh.private_key_path = ["/home/luca/.ssh/id_rsa", "~/.vagrant.d/insecure_private_key"]
-server01.vm.provision "file", source: "/home/luca/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
+and the change the path at server01.ssh.private_key_path variable
 
 
 
