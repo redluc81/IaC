@@ -1,0 +1,85 @@
+---
+- name: Disable SELinux
+  selinux:
+    state: disabled
+
+- name: Install required packages
+  yum:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - unzip
+
+- name: Create wildfly user
+  user:
+    name: "{{wildfly_user}}"
+    createhome: no
+    shell: /bin/bash
+
+- name: Download and extract tarball
+  unarchive:
+    src: "http://download.jboss.org/wildfly/{{wildfly_version}}/wildfly-{{wildfly_version}}.tar.gz"
+    dest: "{{wildfly_basedir}}"
+    creates: "{{wildfly_basedir}}/wildfly-{{wildfly_version}}"
+    remote_src: yes
+    owner: "{{wildfly_user}}"
+    group: "{{wildfly_user}}"
+
+- name: Make symbolic link to wildfly home
+  file:
+    src: "{{wildfly_basedir}}/wildfly-{{wildfly_version}}"
+    dest: "{{wildfly_home}}"
+    state: link
+    owner: "{{wildfly_user}}"
+    group: "{{wildfly_user}}"
+
+- name: Overwrite standalone config
+  template:
+    src: standalone.xml
+    dest: "{{wildfly_home}}/standalone/configuration"
+    owner: "{{wildfly_user}}"
+    group: "{{wildfly_user}}"
+    mode: 0644
+
+- name: Copy service script
+  template:
+    src: wildfly.service
+    dest: /lib/systemd/system
+    mode: 0644
+
+- name: Link to systemd service
+  file:
+    src: /lib/systemd/system/wildfly.service
+    dest: /etc/systemd/system/multi-user.target.wants/wildfly.service
+    state: link
+    mode: 0777
+
+- name: Copy management console user configuration
+  template:
+    src: "{{item}}"
+    dest: "{{wildfly_home}}/standalone/configuration"
+    owner: "{{wildfly_user}}"
+    group: "{{wildfly_user}}"
+    mode: 0644
+  with_items:
+    - mgmt-users.properties
+    - mgmt-groups.properties
+
+- name: Change auth dir permissios to allow CLI deployments
+  file:
+    path: "{{wildfly_home}}/standalone/tmp/auth"
+    mode: 0744
+    state: directory
+
+
+- name: Copy control script
+  template:
+    src: launch.sh
+    dest: "{{wildfly_home}}/bin"
+    owner: "{{wildfly_user}}"
+    group: "{{wildfly_user}}"
+    mode: 0777
+  notify: Start wildfly service
+
+ 
+
