@@ -1,0 +1,45 @@
+---
+
+- name: jackrabbit | create base dir
+  file: path={{ base_dir }} state=directory owner=root group=root mode=0755
+  tags: jackrabbit
+
+- name: jackrabbit | download jar
+  get_url: url=http://www.eu.apache.org/dist/jackrabbit/{{ version }}/{{ jar }} dest={{ path }} owner=root group=root mode=0755
+  tags: jackrabbit
+
+- name: jackrabbit | create symlink
+  file: src={{ path }} dest={{ base_dir }}/jackrabbit.jar owner=root group=root state=link
+  tags: jackrabbit
+
+- name: Copy service script
+  template:
+    src: jackrabbit.service 
+    dest: /lib/systemd/system
+    mode: 0644
+
+- name: Link to systemd service
+  file:
+    src: /lib/systemd/system/jackrabbit.service
+    dest: /etc/systemd/system/multi-user.target.wants/jackrabbit.service
+    state: link
+    mode: 0777
+
+- name: install the latest version of curl
+  yum:
+    name: curl
+    state: latest
+  tags: jackrabbit
+
+- name: jackrabbit | create log path
+  file: path={{ log_path }} state=directory
+  tags: jackrabbit
+
+- name: start jackrabbit
+  systemd:
+    name: jackrabbit
+    state: started
+  become: yes
+
+
+

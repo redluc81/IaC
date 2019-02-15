@@ -1,0 +1,5 @@
+---
+- hosts: eap
+  roles:
+      - role: oraclejdk
+      - role: jboss

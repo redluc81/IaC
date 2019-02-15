@@ -1,0 +1,7 @@
+---
+
+- hosts: jcr
+  become: true
+  roles:
+    - role: java
+    - role : jcr

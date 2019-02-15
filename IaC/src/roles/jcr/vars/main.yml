@@ -1,0 +1,8 @@
+version: 2.14.6
+base_dir: /usr/bin/jackrabbit
+jar: "jackrabbit-standalone-{{ version }}.jar"
+path: "{{ base_dir }}/{{ jar }}"
+host: 127.0.0.1
+port: 8080
+log_path: /var/log/jackrabbit
+startup_script_path: /etc/systemd/service/

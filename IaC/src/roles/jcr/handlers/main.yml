@@ -1,0 +1,8 @@
+---
+
+- name: start jackrabbit
+  systemd:
+    name: jackrabbit
+    state: started
+
+
