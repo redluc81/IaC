@@ -1,4 +1,4 @@
-# sofware requirements in the Control machine
+# sofware requirements
 
 Debian GNU/Linux 9 (stretch) or Centos 7
 
@@ -6,22 +6,28 @@ ansible 2.2.1.0
 
 Vagrant 1.9.1
 
-# command to run
+# Content description
 
-cd IaC/vagrant/centos
+Create and start 4 Vagrant boxes
 
-vagrant up
+ - apache01
+ - db02
+ - eao03
+ - jcr04
 
-cd IaC/ansible
+and install/configure with Ansible
+  
+ - Apache HTTP server in apache01
+ - MySql server in db02
+ - WildFly 10.0.0-Final  in eap03
+ - Jackrabbit  in jcr04
 
-ansible-playbook apache.yml
+# Notes
 
-ansible-playbook mysql.yml
+To connect with the Vagrant boxex you have to create your SSH private and public key
+and the change the path at those 2 lines
+server01.ssh.private_key_path = ["/home/luca/.ssh/id_rsa", "~/.vagrant.d/insecure_private_key"]
+server01.vm.provision "file", source: "/home/luca/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
 
-# to test go inside a vagrant box (for example the server where has been installed MySql)
-ssh vagrant@192.168.33.24 
-# and run 
-mysql -u root -p
-# the password is admin1234
 
 

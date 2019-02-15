@@ -1,14 +1,14 @@
 
 Vagrant.configure("2") do |config|
 
-  config.vm.define "server01" do |server01|
-  	server01.vm.box = "centos/7"
-  	server01.vm.hostname = "apache" 
-        server01.vm.network "private_network", ip: "192.168.33.23"
-	server01.ssh.insert_key = false
-  	server01.ssh.private_key_path = ["/home/luca/.ssh/id_rsa", "~/.vagrant.d/insecure_private_key"]
-  	server01.vm.provision "file", source: "/home/luca/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
-  	server01.vm.provision "shell", inline: <<-EOC
+  config.vm.define "apache01" do |apache01|
+  	apache01.vm.box = "centos/7"
+  	apache01.vm.hostname = "apache01" 
+        apache01.vm.network "private_network", ip: "192.168.10.10"
+	apache01.ssh.insert_key = false
+  	apache01.ssh.private_key_path = ["/home/luca/.ssh/id_rsa", "~/.vagrant.d/insecure_private_key"]
+  	apache01.vm.provision "file", source: "/home/luca/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
+  	apache01.vm.provision "shell", inline: <<-EOC
     		sudo sed -i -e "\\#PasswordAuthentication yes# s#PasswordAuthentication yes#PasswordAuthentication no#g" /etc/ssh/sshd_config
     	sudo systemctl restart sshd.service
         sudo nmcli connection reload
@@ -16,17 +16,16 @@ Vagrant.configure("2") do |config|
   	EOC
    end
 
-   config.vm.define "server02" do |server02|
-  	server02.vm.box = "centos/7"
-  	server02.vm.hostname = "server02" 
-        server02.vm.network "private_network", ip: "192.168.33.24"
-	server02.ssh.insert_key = false
-  	server02.ssh.private_key_path = ["/home/luca/.ssh/id_rsa", "~/.vagrant.d/insecure_private_key"]
-  	server02.vm.provision "file", source: "/home/luca/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
-  	server02.vm.provision "shell", inline: <<-EOC
+   config.vm.define "db02" do |db02|
+  	db02.vm.box = "centos/7"
+  	db02.vm.hostname = "db02" 
+        db02.vm.network "private_network", ip: "192.168.10.11"
+	db02.ssh.insert_key = false
+  	db02.ssh.private_key_path = ["/home/luca/.ssh/id_rsa", "~/.vagrant.d/insecure_private_key"]
+  	db02.vm.provision "file", source: "/home/luca/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
+  	db02.vm.provision "shell", inline: <<-EOC
     		sudo sed -i -e "\\#PasswordAuthentication yes# s#PasswordAuthentication yes#PasswordAuthentication no#g" /etc/ssh/sshd_config
     	sudo systemctl restart sshd.service
-        sudo yum -y install sshpass 
         sudo yum -y install wget zip unzip file
         sudo nmcli connection reload
 	sudo systemctl restart network.service
@@ -34,14 +33,30 @@ Vagrant.configure("2") do |config|
    end
 
 
-   config.vm.define "server03" do |server03|
-  	server03.vm.box = "centos/7"
-  	server03.vm.hostname = "jboss" 
-        server03.vm.network "private_network", ip: "192.168.33.25"
-	server03.ssh.insert_key = false
-  	server03.ssh.private_key_path = ["/home/luca/.ssh/id_rsa", "~/.vagrant.d/insecure_private_key"]
-  	server03.vm.provision "file", source: "/home/luca/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
-  	server03.vm.provision "shell", inline: <<-EOC
+   config.vm.define "eap03" do |eap03|
+  	eap03.vm.box = "centos/7"
+  	eap03.vm.hostname = "eap03" 
+        eap03.vm.network "private_network", ip: "192.168.10.12"
+	eap03.ssh.insert_key = false
+  	eap03.ssh.private_key_path = ["/home/luca/.ssh/id_rsa", "~/.vagrant.d/insecure_private_key"]
+  	eap03.vm.provision "file", source: "/home/luca/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
+  	eap03.vm.provision "shell", inline: <<-EOC
+    		sudo sed -i -e "\\#PasswordAuthentication yes# s#PasswordAuthentication yes#PasswordAuthentication no#g" /etc/ssh/sshd_config
+    	sudo systemctl restart sshd.service
+        sudo nmcli connection reload
+	sudo systemctl restart network.service
+  	EOC
+   end
+
+
+  config.vm.define "jcr04" do |jcr04|
+  	jcr04.vm.box = "centos/7"
+  	jcr04.vm.hostname = "eap03" 
+        jcr04.vm.network "private_network", ip: "192.168.10.13"
+	jcr04.ssh.insert_key = false
+  	jcr04.ssh.private_key_path = ["/home/luca/.ssh/id_rsa", "~/.vagrant.d/insecure_private_key"]
+  	jcr04.vm.provision "file", source: "/home/luca/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
+  	jcr04.vm.provision "shell", inline: <<-EOC
     		sudo sed -i -e "\\#PasswordAuthentication yes# s#PasswordAuthentication yes#PasswordAuthentication no#g" /etc/ssh/sshd_config
     	sudo systemctl restart sshd.service
         sudo nmcli connection reload
