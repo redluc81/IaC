@@ -2,7 +2,7 @@
 Description=start jackrabbit
 
 [Service]
-ExecStart=/usr/java/jdk1.8.0_201-amd64/bin/java -jar /usr/bin/jackrabbit/jackrabbit.jar
+ExecStart=/usr/java/jdk1.8.0_131/bin/java -jar /usr/bin/jackrabbit/jackrabbit.jar
 
 [Install]
 WantedBy=multi-user.target
